@@ -15,12 +15,13 @@ import { AgentActivity } from "./AgentActivity";
 
 export const Workspace = () => {
   const [scene, setScene] = useState(0);
-  const [workspace, setWorkspace] = useState<WorkspaceConfig>(generateWorkspace(0, []));
+  const [promptInput, setPromptInput] = useState("Investigate checkout outage after latest deployment.");
+  const [workspace, setWorkspace] = useState<WorkspaceConfig>(generateWorkspace(0, [], promptInput));
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
 
   useEffect(() => {
     // Generate the next state based on the scene index
-    setWorkspace(prev => generateWorkspace(scene, prev.logs));
+    setWorkspace(prev => generateWorkspace(scene, prev.logs, promptInput));
 
     // Update active agents based on scene
     if (scene === 1) setActiveAgents(["architect"]);
@@ -32,9 +33,9 @@ export const Workspace = () => {
 
   const handlePrompt = () => {
     setScene(1);
-    // Simulate agent processing
-    setTimeout(() => setScene(2), 3000);
-    setTimeout(() => setScene(3), 7000);
+    // Simulate agent processing with longer delays for demo presentation
+    setTimeout(() => setScene(2), 6000); // 6 seconds in Investigation mode
+    setTimeout(() => setScene(3), 14000); // 14 seconds before Critical War Room mode
   };
 
   const handleRollback = () => {
@@ -90,9 +91,9 @@ export const Workspace = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-transparent overflow-hidden">
+    <div className="min-h-screen w-full flex flex-col bg-transparent overflow-x-hidden overflow-y-auto custom-scrollbar">
       {/* Header */}
-      <header className="h-16 border-b border-white/10 bg-black/40 backdrop-blur-md flex items-center justify-between px-6 z-50">
+      <header className="h-16 border-b border-white/10 bg-black/40 backdrop-blur-md flex items-center justify-between px-6 z-50 sticky top-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded bg-primary/20 flex items-center justify-center border border-primary/50">
             <Command size={18} className="text-primary" />
@@ -117,7 +118,7 @@ export const Workspace = () => {
       </header>
 
       {/* Main Workspace Area */}
-      <main className={`flex-1 relative transition-all duration-1000 ${getGridClasses(workspace.layout)}`}>
+      <main className={`flex-1 relative transition-all duration-1000 p-6 flex flex-col ${workspace.layout !== 'empty' ? getGridClasses(workspace.layout) : 'items-center justify-center'}`}>
         <AnimatePresence mode="popLayout">
           {scene === 0 ? (
             <motion.div 
@@ -125,7 +126,7 @@ export const Workspace = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="flex flex-col items-center justify-center max-w-2xl text-center space-y-8"
+              className="flex flex-col items-center justify-center max-w-2xl text-center space-y-8 mt-24"
             >
               <div className="w-24 h-24 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-4">
                 <Command size={48} className="text-white/20" />
@@ -141,7 +142,9 @@ export const Workspace = () => {
                     type="text" 
                     placeholder="e.g. Investigate checkout outage after latest deployment..."
                     className="w-full bg-transparent text-white px-4 py-4 outline-none placeholder:text-white/30"
-                    defaultValue="Investigate checkout outage after latest deployment."
+                    value={promptInput}
+                    onChange={(e) => setPromptInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handlePrompt()}
                   />
                   <button 
                     onClick={handlePrompt}

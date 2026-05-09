@@ -25,7 +25,7 @@ export const initialWorkspace: WorkspaceConfig = {
   logs: ["System idle. Waiting for events..."]
 };
 
-export const generateWorkspace = (sceneIndex: number, currentLogs: string[]): WorkspaceConfig => {
+export const generateWorkspace = (sceneIndex: number, currentLogs: string[], userPrompt: string = "Investigate system anomalies."): WorkspaceConfig => {
   switch (sceneIndex) {
     case 0:
       return initialWorkspace;
@@ -34,7 +34,7 @@ export const generateWorkspace = (sceneIndex: number, currentLogs: string[]): Wo
         mode: "investigating",
         layout: "investigation",
         status: "investigating",
-        logs: [...currentLogs, "USER: Investigate checkout outage after latest deployment.", "AGENT [Orchestrator]: Spawning specialized agents..."],
+        logs: [...currentLogs, `USER: ${userPrompt}`, "AGENT [Orchestrator]: Spawning specialized agents..."],
         panels: [{ id: "p-investigation", type: "investigation_panel", position: "center", size: "medium" }]
       };
     case 2:
