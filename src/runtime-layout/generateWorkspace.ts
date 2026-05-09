@@ -1,10 +1,11 @@
-export type PanelType = "topology_map" | "rollback_console" | "incident_timeline" | "streaming_logs" | "investigation_panel";
+export type PanelType = "topology_map" | "rollback_console" | "incident_timeline" | "streaming_logs" | "investigation_panel" | "metrics_panel" | "debugger_panel";
 
 export interface PanelConfig {
   id: string;
   type: PanelType;
-  position: "left" | "right" | "bottom" | "center" | "fullscreen";
+  position: "left" | "right" | "bottom" | "center" | "top-right" | "bottom-left" | "main";
   size: "small" | "medium" | "large" | "full";
+  gridArea?: string;
   data?: any;
 }
 
@@ -24,79 +25,75 @@ export const initialWorkspace: WorkspaceConfig = {
   logs: ["System idle. Waiting for events..."]
 };
 
-// Simulated agents returning different workspace configurations based on the scene
 export const generateWorkspace = (sceneIndex: number, currentLogs: string[]): WorkspaceConfig => {
   switch (sceneIndex) {
     case 0:
       return initialWorkspace;
     case 1:
-      // User triggers investigate
       return {
         mode: "investigating",
         layout: "investigation",
         status: "investigating",
-        logs: [...currentLogs, "USER: Investigate checkout outage after latest deployment.", "AGENT [Orchestrator]: Engaging investigation protocol..."],
-        panels: [
-          { id: "p-investigation", type: "investigation_panel", position: "center", size: "medium" }
-        ]
+        logs: [...currentLogs, "USER: Investigate checkout outage after latest deployment.", "AGENT [Orchestrator]: Spawning specialized agents..."],
+        panels: [{ id: "p-investigation", type: "investigation_panel", position: "center", size: "medium" }]
       };
     case 2:
-      // AI Agents activate
+      // Analysis Phase
       return {
         mode: "analysis",
-        layout: "investigation",
+        layout: "war_room",
         status: "investigating",
         logs: [
           ...currentLogs,
-          "AGENT [QA]: Scanning test vectors for checkout service...",
-          "AGENT [QA]: DETECTED: 14 regression failures in payment processing.",
-          "AGENT [Infra]: Telemetry snapshot retrieved from k8s-cluster-01.",
-          "AGENT [Infra]: WARNING: Latency p99 > 2500ms for checkout-service.",
-          "AGENT [Topology]: Mapping dependencies for checkout -> payment -> db.",
-          "AGENT [UI Architect]: Syncing War Room layout for critical incident."
+          "AGENT [Infra]: Monitoring traffic patterns...",
+          "AGENT [QA]: Running test vectors...",
+          "AGENT [Topology]: Building service dependency graph...",
+          "AGENT [Infra]: ALERT: Latency spike detected in checkout-service."
         ],
         panels: [
-          { id: "p-topology", type: "topology_map", position: "left", size: "large" },
-          { id: "p-logs", type: "streaming_logs", position: "right", size: "small" }
+          { id: "p-metrics", type: "metrics_panel", position: "left", gridArea: "1 / 1 / 5 / 9", size: "medium" },
+          { id: "p-logs", type: "streaming_logs", position: "right", gridArea: "1 / 9 / 13 / 13", size: "large" },
+          { id: "p-topology", type: "topology_map", position: "bottom", gridArea: "5 / 1 / 13 / 9", size: "large" }
         ]
       };
     case 3:
-      // Critical outage war room
+      // Critical Outage War Room
       return {
         mode: "critical_incident",
         layout: "war_room",
         status: "critical",
         logs: [
           ...currentLogs,
-          "AGENT [Infra]: CRITICAL: checkout-service is down.",
-          "AGENT [Recovery]: Formulating recovery plan...",
-          "AGENT [Recovery]: Recommended action: Rollback deployment v2.1.4 to v2.1.3.",
-          "AGENT [UI Architect]: Generating War Room interface..."
+          "AGENT [Recovery]: Critical bug identified in PaymentHandler.ts",
+          "AGENT [Recovery]: Proposing immediate rollback to v2.1.3.",
+          "AGENT [UI Architect]: Expanding workspace with debugger and recovery console."
         ],
         panels: [
-          { id: "p-topology-alert", type: "topology_map", position: "left", size: "large", data: { alert: true } },
-          { id: "p-rollback", type: "rollback_console", position: "bottom", size: "medium" },
-          { id: "p-timeline", type: "incident_timeline", position: "right", size: "medium" }
+          { id: "p-topology-alert", type: "topology_map", position: "left", gridArea: "1 / 1 / 7 / 6", size: "medium", data: { alert: true } },
+          { id: "p-metrics-alert", type: "metrics_panel", position: "center", gridArea: "1 / 6 / 7 / 9", size: "small", data: { alert: true } },
+          { id: "p-logs", type: "streaming_logs", position: "right", gridArea: "1 / 9 / 13 / 13", size: "large" },
+          { id: "p-debugger", type: "debugger_panel", position: "bottom-left", gridArea: "7 / 1 / 13 / 5", size: "medium" },
+          { id: "p-rollback", type: "rollback_console", position: "bottom", gridArea: "7 / 5 / 13 / 9", size: "medium" }
         ]
       };
     case 4:
-      // Rollback initiated
+      // Recovery Phase
       return {
         mode: "recovery",
-        layout: "recovery",
+        layout: "war_room",
         status: "recovering",
         logs: [
           ...currentLogs,
           "USER: Rollback deployment.",
-          "AGENT [Recovery]: Executing rollback to v2.1.3...",
-          "AGENT [Infra]: Monitoring traffic on v2.1.3...",
-          "AGENT [QA]: Re-running checkout test suite...",
-          "AGENT [QA]: All tests passing. Checkout service restored."
+          "AGENT [Recovery]: Rollback in progress...",
+          "AGENT [Infra]: Monitoring traffic shift...",
+          "AGENT [QA]: All tests passing for v2.1.3.",
+          "AGENT [Orchestrator]: Incident resolved."
         ],
         panels: [
-          { id: "p-topology-recovered", type: "topology_map", position: "left", size: "medium", data: { alert: false, recovered: true } },
-          { id: "p-timeline-updated", type: "incident_timeline", position: "right", size: "medium", data: { recovered: true } },
-          { id: "p-logs", type: "streaming_logs", position: "center", size: "large" }
+          { id: "p-metrics-recovered", type: "metrics_panel", position: "left", gridArea: "1 / 1 / 6 / 9", size: "large" },
+          { id: "p-timeline", type: "incident_timeline", position: "right", gridArea: "1 / 9 / 13 / 13", size: "large", data: { recovered: true } },
+          { id: "p-topology-recovered", type: "topology_map", position: "bottom", gridArea: "6 / 1 / 13 / 9", size: "large", data: { recovered: true } }
         ]
       };
     default:

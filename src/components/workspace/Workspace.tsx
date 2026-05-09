@@ -7,6 +7,8 @@ import { StreamingLogs } from "../panels/StreamingLogs";
 import { RollbackConsole } from "../panels/RollbackConsole";
 import { IncidentTimeline } from "../panels/IncidentTimeline";
 import { InvestigationPanel } from "../panels/InvestigationPanel";
+import { MetricsPanel } from "../panels/MetricsPanel";
+import { DebuggerPanel } from "../panels/DebuggerPanel";
 import { PanelConfig, WorkspaceConfig, generateWorkspace } from "@/runtime-layout/generateWorkspace";
 import { Command, Sparkles, Search, Activity, Shield, Terminal } from "lucide-react";
 import { AgentActivity } from "./AgentActivity";
@@ -51,6 +53,10 @@ export const Workspace = () => {
         return <StreamingLogs logs={workspace.logs} />;
       case "investigation_panel":
         return <InvestigationPanel />;
+      case "metrics_panel":
+        return <MetricsPanel isCritical={panel.data?.alert} />;
+      case "debugger_panel":
+        return <DebuggerPanel />;
       default:
         return null;
     }
@@ -69,24 +75,18 @@ export const Workspace = () => {
     }
   };
 
+  const getPanelStyles = (panel: PanelConfig) => {
+    if (workspace.layout === "investigation") return {};
+    return {
+      gridArea: panel.gridArea
+    };
+  };
+
   const getPanelClasses = (panel: PanelConfig) => {
     if (workspace.layout === "investigation") {
       return "w-full max-w-4xl h-[600px]";
     }
-
-    // Grid placements for war room / recovery
-    let classes = "";
-    if (panel.position === "left") {
-      classes += "col-span-8 row-span-8 ";
-    } else if (panel.position === "right") {
-      classes += "col-span-4 row-span-12 ";
-    } else if (panel.position === "bottom") {
-      classes += "col-span-8 row-span-4 ";
-    } else if (panel.position === "center") {
-      classes += "col-span-8 row-span-12 ";
-    }
-
-    return classes;
+    return "w-full h-full";
   };
 
   return (
@@ -162,6 +162,7 @@ export const Workspace = () => {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5, type: "spring", bounce: 0.2 }}
                 className={getPanelClasses(panel)}
+                style={getPanelStyles(panel)}
               >
                 {renderPanel(panel)}
               </motion.div>
