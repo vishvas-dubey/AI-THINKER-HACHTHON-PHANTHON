@@ -1,3 +1,4 @@
+/** 🤖 AI-POWERED COMPONENT - PHANTOM-OPS CORE WORKSPACE **/
 "use client";
 
 import { useState, useEffect, useMemo } from "react";

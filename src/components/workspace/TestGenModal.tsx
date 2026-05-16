@@ -1,3 +1,4 @@
+/** 🤖 AI-POWERED COMPONENT - PHANTOM-OPS AUTONOMOUS QA **/
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";

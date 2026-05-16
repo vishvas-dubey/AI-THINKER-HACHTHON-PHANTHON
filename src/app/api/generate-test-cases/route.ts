@@ -1,3 +1,4 @@
+/** 🤖 AI-POWERED API ROUTE - PHANTOM-OPS TEST GENERATOR **/
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextResponse } from 'next/server';
 import fs from 'fs/promises';

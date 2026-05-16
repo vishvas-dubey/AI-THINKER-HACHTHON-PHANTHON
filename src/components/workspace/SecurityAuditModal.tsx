@@ -1,3 +1,4 @@
+/** 🤖 AI-POWERED COMPONENT - PHANTOM-OPS SECURITY SWARM **/
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
