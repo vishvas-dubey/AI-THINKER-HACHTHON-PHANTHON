@@ -151,33 +151,44 @@ export const Workspace = () => {
     <div className="min-h-screen w-full flex flex-col bg-transparent overflow-x-hidden overflow-y-auto custom-scrollbar">
       {/* Header */}
       <header className="h-16 border-b border-white/10 bg-black/40 backdrop-blur-md flex items-center justify-between px-6 z-50 sticky top-0">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded bg-primary/20 flex items-center justify-center border border-primary/50">
-            <Command size={18} className="text-primary" />
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
           </div>
-          <span className="font-bold text-lg tracking-wider text-white">PHANTOM<span className="text-primary">OPS</span></span>
+          <div className="flex flex-col">
+            <span className="font-bold text-xl tracking-tight text-white">NexusQA</span>
+            <span className="text-[10px] text-white/50 font-mono tracking-wider">Autonomous SDET Swarm v1.0</span>
+          </div>
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/60">
-            <Sparkles size={14} className="text-primary" />
-            AI Workspace Active
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
+            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+            System Ready
           </div>
+          
           <button 
             onClick={() => setIsReportsOpen(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:bg-white/10 hover:text-white transition-all"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs text-white/80 hover:bg-white/10 hover:text-white transition-all"
           >
             <History size={14} />
             History
           </button>
+
           {scene !== 0 && (
             <button 
               onClick={() => setScene(0)}
-              className="text-xs text-white/40 hover:text-white transition-colors border border-white/10 px-3 py-1.5 rounded-full hover:bg-white/5"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-xs text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-all"
             >
               Reset Workspace
             </button>
           )}
+
+          <button 
+            className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white transition-all"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+          </button>
         </div>
       </header>
 
@@ -186,37 +197,111 @@ export const Workspace = () => {
         <AnimatePresence mode="popLayout">
           {scene === 0 ? (
             <motion.div 
-              key="empty-state"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="flex flex-col items-center justify-center max-w-2xl text-center space-y-8 mt-24"
+              key="nexus-dashboard"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="w-full h-full max-w-7xl mx-auto grid grid-cols-12 gap-6 p-6"
             >
-              <div className="w-24 h-24 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-4">
-                <Command size={48} className="text-white/20" />
-              </div>
-              <h1 className="text-4xl font-bold text-white tracking-tight">AI Operational Workspace</h1>
-              <p className="text-lg text-white/50">Enter a command to spawn an autonomous investigation.</p>
-              
-              <div className="w-full relative group">
-                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative flex items-center bg-black/50 border border-white/20 rounded-xl overflow-hidden shadow-2xl backdrop-blur-sm">
-                  <Search className="text-white/40 ml-4" size={20} />
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Investigate checkout outage after latest deployment..."
-                    className="w-full bg-transparent text-white px-4 py-4 outline-none placeholder:text-white/30"
+              {/* Left Column - Input Panel */}
+              <div className="col-span-4 flex flex-col gap-4">
+                <div className="bg-[#111111] border border-white/5 rounded-2xl p-6 flex flex-col flex-1 shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                  <h2 className="flex items-center gap-2 text-white/80 font-medium mb-6">
+                    <span className="text-blue-500 font-mono">{'>_'}</span> Requirement Input
+                  </h2>
+                  <textarea 
+                    className="w-full flex-1 bg-black/40 border border-white/5 rounded-xl p-4 text-white/90 font-mono text-sm resize-none focus:outline-none focus:border-blue-500/50 transition-colors placeholder:text-white/20"
+                    placeholder="Enter requirement or type 'api testing'..."
                     value={promptInput}
                     onChange={(e) => setPromptInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handlePrompt()}
                   />
-                  <button 
-                    onClick={handlePrompt}
-                    className="bg-primary hover:bg-blue-600 text-white px-6 py-4 font-semibold transition-colors flex items-center gap-2"
-                  >
-                    Execute
-                  </button>
                 </div>
+                <button 
+                  onClick={handlePrompt}
+                  className="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-2xl p-4 font-semibold text-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg shadow-blue-600/20"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  Run QA Swarm
+                </button>
+
+                {/* Metrics Cards */}
+                <div className="grid grid-cols-2 gap-4 mt-2">
+                  <div className="bg-[#111111] border border-white/5 rounded-xl p-4 flex flex-col gap-1 shadow-lg relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 blur-xl rounded-full"></div>
+                    <span className="text-white/40 text-[10px] uppercase tracking-wider font-bold">Bugs Detected</span>
+                    <span className="text-white/90 text-2xl font-mono">0</span>
+                  </div>
+                  <div className="bg-[#111111] border border-white/5 rounded-xl p-4 flex flex-col gap-1 shadow-lg relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/5 blur-xl rounded-full"></div>
+                    <span className="text-white/40 text-[10px] uppercase tracking-wider font-bold">Inference Speed</span>
+                    <span className="text-white/90 text-2xl font-mono">1.2s</span>
+                  </div>
+                  <div className="bg-[#111111] border border-white/5 rounded-xl p-4 flex flex-col gap-1 shadow-lg col-span-2 relative overflow-hidden flex-row items-center justify-between">
+                    <div className="absolute left-0 bottom-0 w-full h-8 bg-green-500/5 blur-xl"></div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-white/40 text-[10px] uppercase tracking-wider font-bold">Active Nodes</span>
+                      <span className="text-white/90 text-2xl font-mono">5</span>
+                    </div>
+                    <div className="w-10 h-10 rounded-full border border-green-500/20 flex items-center justify-center bg-green-500/5">
+                      <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column - Map & Logs */}
+              <div className="col-span-8 flex flex-col gap-6">
+                {/* Swarm Map Panel */}
+                <div className="bg-[#111111] border border-white/5 rounded-2xl p-8 h-64 shadow-2xl relative overflow-hidden flex items-center justify-center">
+                  {/* Dotted Background */}
+                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]"></div>
+                  
+                  {/* Connecting Line */}
+                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-[1px] border-b border-dashed border-white/10"></div>
+                  
+                  {/* Nodes */}
+                  <div className="relative flex justify-between w-full max-w-2xl px-4 z-10">
+                    {[
+                      { name: 'ANALYST', icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><circle cx="11" cy="14" r="2"/><path d="m12.5 15.5 2.5 2.5"/></svg> },
+                      { name: 'SDET', icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> },
+                      { name: 'EXECUTOR', icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> },
+                      { name: 'HEALER', icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg> },
+                      { name: 'REPORTER', icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> }
+                    ].map((node, i) => (
+                      <div key={node.name} className="flex flex-col items-center gap-4">
+                        <div className="w-14 h-14 rounded-2xl bg-[#0a0a0a] border border-white/10 flex items-center justify-center text-white/70 shadow-lg relative group cursor-pointer hover:border-white/30 transition-colors">
+                          {node.icon}
+                        </div>
+                        <span className="text-[10px] font-bold tracking-widest text-white/40">{node.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Logs Panel */}
+                <div className="bg-[#111111] border border-white/5 rounded-2xl flex-1 shadow-2xl flex flex-col overflow-hidden relative">
+                  <div className="h-10 border-b border-white/5 bg-black/20 flex items-center px-4 justify-between">
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                      <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                    </div>
+                    <span className="text-xs font-mono text-white/40">swarm_execution.log</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/20"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                  </div>
+                  <div className="p-4 font-mono text-xs text-white/60 space-y-2 flex-1">
+                    <div className="text-white/30">{'[09:16:19] Initializing NexusQA Swarm...'}</div>
+                    <div className="text-white/30">{'[09:16:19] Waiting for requirement input...'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="col-span-12 flex justify-center mt-4">
+                <span className="text-[10px] text-white/30 tracking-widest font-mono">
+                  © 2026 NEXUS QA • ENGINEERED FOR EXCELLENCE
+                </span>
               </div>
             </motion.div>
           ) : (
