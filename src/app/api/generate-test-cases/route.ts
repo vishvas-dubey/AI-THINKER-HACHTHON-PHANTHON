@@ -21,16 +21,40 @@ export async function POST(req: Request) {
       await fs.mkdir(genDir, { recursive: true });
     }
 
-    if (process.env.GEMINI_API_KEY) {
-      console.log("Using real Gemini API (Gemini 2.0 Flash)...");
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const prompt = `Generate a CSV of 10 mission-critical test scenarios for a Fintech flow named "${name}". 
-      Include columns: ID, Scenario, Priority, Expected Result.
-      Focus on edge cases like security, concurrency, and validation.
-      Return ONLY the CSV content without any conversational text.`;
+    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-      const result = await model.generateContent(prompt);
-      const csvContent = result.response.text().replace(/```csv|```/g, "").trim();
+    if (OPENROUTER_API_KEY) {
+      console.log("Using OpenRouter API (Llama 3)...");
+      
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+          "HTTP-Referer": "https://github.com/phantom-ops", // Optional, for OpenRouter rankings
+          "X-Title": "AI Release Commander", // Optional
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          "model": "meta-llama/llama-3.1-8b-instruct:free",
+          "messages": [
+            {
+              "role": "user",
+              "content": `Generate a CSV of 10 mission-critical test scenarios for a Fintech flow named "${name}". 
+              Include columns: ID, Scenario, Priority, Expected Result.
+              Focus on edge cases like security, concurrency, and validation.
+              Return ONLY the CSV content without any conversational text or markdown code blocks.`
+            }
+          ]
+        })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error?.message || "OpenRouter API failed");
+      }
+
+      const csvContent = data.choices[0].message.content.trim();
 
       const fileName = `scenarios_${name.replace(/\s+/g, '_').toLowerCase()}_${Date.now()}.csv`;
       const filePath = path.join(process.cwd(), 'public', 'generated', fileName);
