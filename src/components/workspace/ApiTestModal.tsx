@@ -1,4 +1,3 @@
-/** 🤖 AI-POWERED COMPONENT - PHANTOM-OPS API AUDITOR **/
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
