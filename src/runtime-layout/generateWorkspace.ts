@@ -25,7 +25,7 @@ export const initialWorkspace: WorkspaceConfig = {
   logs: ["System idle. Waiting for events..."]
 };
 
-export const generateWorkspace = (sceneIndex: number, currentLogs: string[], userPrompt: string = "Investigate system anomalies."): WorkspaceConfig => {
+export const generateWorkspace = (sceneIndex: number, currentLogs: string[], userPrompt: string = "Investigate system anomalies.", analysisText: string = ""): WorkspaceConfig => {
   switch (sceneIndex) {
     case 0:
       return initialWorkspace;
@@ -43,13 +43,7 @@ export const generateWorkspace = (sceneIndex: number, currentLogs: string[], use
         mode: "analysis",
         layout: "war_room",
         status: "investigating",
-        logs: [
-          ...currentLogs,
-          "AGENT [Infra]: Monitoring traffic patterns...",
-          "AGENT [QA]: Running test vectors...",
-          "AGENT [Topology]: Building service dependency graph...",
-          "AGENT [Infra]: ALERT: Latency spike detected in checkout-service."
-        ],
+        logs: currentLogs,
         panels: [
           { id: "p-metrics", type: "metrics_panel", position: "left", gridArea: "1 / 1 / 5 / 9", size: "medium" },
           { id: "p-logs", type: "streaming_logs", position: "right", gridArea: "1 / 9 / 13 / 13", size: "large" },
@@ -62,17 +56,12 @@ export const generateWorkspace = (sceneIndex: number, currentLogs: string[], use
         mode: "critical_incident",
         layout: "war_room",
         status: "critical",
-        logs: [
-          ...currentLogs,
-          "AGENT [Recovery]: Critical bug identified in PaymentHandler.ts",
-          "AGENT [Recovery]: Proposing immediate rollback to v2.1.3.",
-          "AGENT [UI Architect]: Expanding workspace with debugger and recovery console."
-        ],
+        logs: currentLogs,
         panels: [
           { id: "p-topology-alert", type: "topology_map", position: "left", gridArea: "1 / 1 / 7 / 6", size: "medium", data: { alert: true } },
           { id: "p-metrics-alert", type: "metrics_panel", position: "center", gridArea: "1 / 6 / 7 / 9", size: "small", data: { alert: true } },
           { id: "p-logs", type: "streaming_logs", position: "right", gridArea: "1 / 9 / 13 / 13", size: "large" },
-          { id: "p-debugger", type: "debugger_panel", position: "bottom-left", gridArea: "7 / 1 / 13 / 5", size: "medium" },
+          { id: "p-debugger", type: "debugger_panel", position: "bottom-left", gridArea: "7 / 1 / 13 / 5", size: "medium", data: { analysis: analysisText } },
           { id: "p-rollback", type: "rollback_console", position: "bottom", gridArea: "7 / 5 / 13 / 9", size: "medium" }
         ]
       };

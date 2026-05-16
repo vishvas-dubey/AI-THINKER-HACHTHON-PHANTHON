@@ -4,17 +4,23 @@ import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
 import { Activity } from "lucide-react";
 
-const data = [
-  { time: "10:40", latency: 120, errors: 0 },
-  { time: "10:41", latency: 132, errors: 0 },
-  { time: "10:42", latency: 101, errors: 0 },
-  { time: "10:43", latency: 134, errors: 2 },
-  { time: "10:44", latency: 850, errors: 45 },
-  { time: "10:45", latency: 2100, errors: 89 },
-  { time: "10:46", latency: 2450, errors: 100 },
-];
+const generateData = (isCritical: boolean) => {
+  const now = new Date();
+  return Array.from({ length: 15 }).map((_, i) => {
+    const time = new Date(now.getTime() - (15 - i) * 60000);
+    const baseLatency = 100 + Math.random() * 50;
+    const latency = isCritical && i > 10 ? baseLatency * (i - 9) * 2 : baseLatency;
+    const errors = isCritical && i > 10 ? (i - 10) * 15 + Math.random() * 10 : 0;
+    return {
+      time: `${time.getHours()}:${time.getMinutes()}`,
+      latency: Math.min(latency, 3000),
+      errors: Math.min(errors, 100)
+    };
+  });
+};
 
 export const MetricsPanel = ({ isCritical }: { isCritical?: boolean }) => {
+  const chartData = generateData(!!isCritical);
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -29,7 +35,7 @@ export const MetricsPanel = ({ isCritical }: { isCritical?: boolean }) => {
         <div className="h-1/2 w-full mb-4">
           <p className="text-[10px] uppercase text-white/40 mb-2 font-bold">Latency (ms)</p>
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data}>
+            <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorLatency" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={isCritical ? "#ef4444" : "#3b82f6"} stopOpacity={0.3}/>
@@ -50,7 +56,7 @@ export const MetricsPanel = ({ isCritical }: { isCritical?: boolean }) => {
         <div className="h-1/2 w-full">
           <p className="text-[10px] uppercase text-white/40 mb-2 font-bold">Error Rate (%)</p>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
+            <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
               <XAxis dataKey="time" hide />
               <YAxis hide domain={[0, 100]} />

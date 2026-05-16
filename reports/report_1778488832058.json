@@ -1,0 +1,57 @@
+{
+  "id": "report_1778488832058",
+  "timestamp": "2026-05-11T08:40:32.058Z",
+  "prompt": "Investigate checkout outage after latest deployment.",
+  "logs": [
+    {
+      "timestamp": "2026-05-11T08:40:03.658Z",
+      "message": "USER: Investigate checkout outage after latest deployment."
+    },
+    {
+      "timestamp": "2026-05-11T08:40:03.659Z",
+      "message": "AGENT [QA Orchestrator]: Initializing testing swarm..."
+    },
+    {
+      "timestamp": "2026-05-11T08:40:03.663Z",
+      "message": "AGENT [QA Bot]: Planning test vectors for the target API..."
+    },
+    {
+      "timestamp": "2026-05-11T08:40:08.495Z",
+      "message": "AGENT [Network]: Executing POST http://localhost:3000/api/checkout with payload: none"
+    },
+    {
+      "timestamp": "2026-05-11T08:40:08.990Z",
+      "message": "AGENT [Infra]: Received response [HTTP 401]"
+    },
+    {
+      "timestamp": "2026-05-11T08:40:11.612Z",
+      "message": "AGENT [Network]: Executing POST http://localhost:3000/api/checkout?token=test-token-123 with payload: {\"cart\": [{\"id\": 1, \"quantity\": 1}], \"total\": 10.00}"
+    },
+    {
+      "timestamp": "2026-05-11T08:40:11.636Z",
+      "message": "AGENT [Infra]: Received response [HTTP 401]"
+    },
+    {
+      "timestamp": "2026-05-11T08:40:15.388Z",
+      "message": "AGENT [Network]: Executing POST, headers: {\"Authorization\": \"Bearer valid-token-123\"} http://localhost:3000/api/checkout with payload: {\"cart\": [{\"id\": 1, \"quantity\": 1}], \"total\": 10.00}"
+    },
+    {
+      "timestamp": "2026-05-11T08:40:15.392Z",
+      "message": "AGENT [Infra]: Received response [HTTP 500]"
+    },
+    {
+      "timestamp": "2026-05-11T08:40:23.305Z",
+      "message": "AGENT [Network]: Executing POST http://localhost:3000/api/checkout with payload: {\"token\": \"test-token-123\", \"cart\": [{\"id\": 1, \"quantity\": 1}], \"total\": 10.00}"
+    },
+    {
+      "timestamp": "2026-05-11T08:40:23.340Z",
+      "message": "AGENT [Infra]: Received response [HTTP 200]"
+    },
+    {
+      "timestamp": "2026-05-11T08:40:32.058Z",
+      "message": "AGENT [Architect]: Finalizing test report..."
+    }
+  ],
+  "analysis": "",
+  "status": "success"
+}

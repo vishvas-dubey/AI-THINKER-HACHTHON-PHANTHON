@@ -3,22 +3,10 @@
 import { motion } from "framer-motion";
 import { Code, FileCode } from "lucide-react";
 
-export const DebuggerPanel = () => {
-  const code = `// AGENT [Recovery]: Identified Regression in Payment Gateway
-// Location: /services/checkout/payment-handler.ts
-
-export async function processPayment(orderId: string) {
--  const gateway = await getGatewayV2();
--  const response = await gateway.authorize(orderId); 
-+  // Reverting to stable V1 gateway
-+  const gateway = await getGatewayV1();
-+  const response = await gateway.process(orderId);
+export const DebuggerPanel = ({ data }: { data?: any }) => {
+  const analysisText = data?.analysis || "Analyzing code for regressions...";
   
-  if (response.status === 'error') {
-    throw new PaymentError(response.code);
-  }
-  return response;
-}`;
+  const code = analysisText.includes('//') ? analysisText : `// AGENT [Audit]: Automated vulnerability discovery\n// Location: /api/checkout/route.ts\n\n${analysisText}`;
 
   return (
     <motion.div
@@ -33,7 +21,7 @@ export async function processPayment(orderId: string) {
       <div className="flex-1 p-4 bg-black/40 overflow-hidden flex flex-col">
         <div className="flex items-center gap-2 mb-3">
           <FileCode size={14} className="text-white/40" />
-          <span className="text-xs text-white/40 font-mono">payment-handler.ts</span>
+          <span className="text-xs text-white/40 font-mono">checkout-agent.ts</span>
         </div>
         <pre className="flex-1 overflow-auto custom-scrollbar font-mono text-[11px] leading-relaxed text-white/70 p-3 bg-white/5 rounded border border-white/5">
           {code.split("\n").map((line, i) => (

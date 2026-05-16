@@ -10,32 +10,89 @@ import { InvestigationPanel } from "../panels/InvestigationPanel";
 import { MetricsPanel } from "../panels/MetricsPanel";
 import { DebuggerPanel } from "../panels/DebuggerPanel";
 import { PanelConfig, WorkspaceConfig, generateWorkspace } from "@/runtime-layout/generateWorkspace";
-import { Command, Sparkles, Search, Activity, Shield, Terminal } from "lucide-react";
+import { Command, Sparkles, Search, Activity, Shield, Terminal, History } from "lucide-react";
 import { AgentActivity } from "./AgentActivity";
+import { ReportsPanel } from "../panels/ReportsPanel";
 
 export const Workspace = () => {
   const [scene, setScene] = useState(0);
   const [promptInput, setPromptInput] = useState("Investigate checkout outage after latest deployment.");
   const [workspace, setWorkspace] = useState<WorkspaceConfig>(generateWorkspace(0, [], promptInput));
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
+  const [analysisResult, setAnalysisResult] = useState("");
+  const [isReportsOpen, setIsReportsOpen] = useState(false);
 
   useEffect(() => {
     // Generate the next state based on the scene index
-    setWorkspace(prev => generateWorkspace(scene, prev.logs, promptInput));
+    setWorkspace(prev => generateWorkspace(scene, prev.logs, promptInput, analysisResult));
 
     // Update active agents based on scene
-    if (scene === 1) setActiveAgents(["architect"]);
+    if (scene === 1) setActiveAgents(["qa", "infra"]);
     if (scene === 2) setActiveAgents(["qa", "infra", "topology"]);
     if (scene === 3) setActiveAgents(["qa", "infra", "recovery", "architect"]);
     if (scene === 4) setActiveAgents(["qa", "infra", "recovery"]);
     if (scene === 0) setActiveAgents([]);
-  }, [scene]);
+  }, [scene, analysisResult]);
 
-  const handlePrompt = () => {
+  const handlePrompt = async () => {
     setScene(1);
-    // Simulate agent processing with longer delays for demo presentation
-    setTimeout(() => setScene(2), 6000); // 6 seconds in Investigation mode
-    setTimeout(() => setScene(3), 14000); // 14 seconds before Critical War Room mode
+    
+    // Clear previous logs
+    setWorkspace(prev => ({ ...prev, logs: [] }));
+
+    try {
+      const response = await fetch('/api/qa-agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: promptInput }),
+      });
+
+      if (!response.body) return;
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      // Move to Analysis mode quickly to show logs
+      setTimeout(() => setScene(2), 2000);
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        
+        // Process SSE lines
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = JSON.parse(line.substring(6));
+            
+            if (data.type === 'log') {
+              setWorkspace(prev => ({
+                ...prev,
+                logs: [...prev.logs, data.message]
+              }));
+            } else if (data.type === 'result') {
+              setAnalysisResult(data.analysis);
+              if (data.status === 'critical') {
+                setScene(3); // Enter War Room
+              } else {
+                // If it succeeded without bugs, just stay in analysis mode
+                setWorkspace(prev => ({
+                  ...prev,
+                  logs: [...prev.logs, "AGENT [System]: Testing completed successfully."]
+                }));
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Agent error:", error);
+    }
   };
 
   const handleRollback = () => {
@@ -106,6 +163,13 @@ export const Workspace = () => {
             <Sparkles size={14} className="text-primary" />
             AI Workspace Active
           </div>
+          <button 
+            onClick={() => setIsReportsOpen(true)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:bg-white/10 hover:text-white transition-all"
+          >
+            <History size={14} />
+            History
+          </button>
           {scene !== 0 && (
             <button 
               onClick={() => setScene(0)}
@@ -175,6 +239,10 @@ export const Workspace = () => {
       </main>
 
       <AgentActivity activeAgents={activeAgents} />
+      
+      <AnimatePresence>
+        {isReportsOpen && <ReportsPanel onClose={() => setIsReportsOpen(false)} />}
+      </AnimatePresence>
       
       {/* Background Ambient Glow */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10">
