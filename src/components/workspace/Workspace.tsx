@@ -33,6 +33,7 @@ import { AgentActivity } from "./AgentActivity";
 import { ReportsPanel } from "../panels/ReportsPanel";
 import { TestGenModal } from "./TestGenModal";
 import { ApiTestModal } from "./ApiTestModal";
+import { SecurityAuditModal } from "./SecurityAuditModal";
 
 export const Workspace = () => {
   const [scene, setScene] = useState(0);
@@ -43,10 +44,15 @@ export const Workspace = () => {
   const [isReportsOpen, setIsReportsOpen] = useState(false);
   const [isTestGenOpen, setIsTestGenOpen] = useState(false);
   const [isApiTestOpen, setIsApiTestOpen] = useState(false);
+  const [isSecurityAuditOpen, setIsSecurityAuditOpen] = useState(false);
 
   useEffect(() => {
     (window as any).openApiTester = () => setIsApiTestOpen(true);
-    return () => { delete (window as any).openApiTester; };
+    (window as any).openSecurityAudit = () => setIsSecurityAuditOpen(true);
+    return () => { 
+      delete (window as any).openApiTester; 
+      delete (window as any).openSecurityAudit;
+    };
   }, []);
 
   const resetWorkspace = () => {
@@ -55,6 +61,7 @@ export const Workspace = () => {
     setAnalysisResult("");
     setIsTestGenOpen(false);
     setIsApiTestOpen(false);
+    setIsSecurityAuditOpen(false);
   };
 
   useEffect(() => {
@@ -395,6 +402,15 @@ export const Workspace = () => {
         {isApiTestOpen && (
           <ApiTestModal 
             onClose={() => setIsApiTestOpen(false)} 
+            onReset={resetWorkspace}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isSecurityAuditOpen && (
+          <SecurityAuditModal 
+            onClose={() => setIsSecurityAuditOpen(false)} 
             onReset={resetWorkspace}
           />
         )}

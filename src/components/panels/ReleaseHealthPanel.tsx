@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Shield, Activity, Users, AlertTriangle, CheckCircle, Zap, History, FilePlus } from "lucide-react";
+import { Shield, Activity, Users, AlertTriangle, CheckCircle, Zap, History, FilePlus, ShieldAlert } from "lucide-react";
 
 interface MetricProps {
   label: string;
@@ -98,6 +98,15 @@ export const ReleaseHealthPanel = ({ isCritical, fileUrl, onOpenTestGen }: { isC
           >
             <Zap size={14} />
             <span className="text-[10px] font-bold uppercase tracking-tighter">API Tester</span>
+          </button>
+
+          <button 
+            onClick={(window as any).openSecurityAudit}
+            className="px-2 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all flex items-center gap-1.5"
+            title="Run Security Audit"
+          >
+            <ShieldAlert size={14} />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Sec Auditor</span>
           </button>
           
           {isCritical ? (

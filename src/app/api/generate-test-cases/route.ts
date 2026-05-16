@@ -22,8 +22,8 @@ export async function POST(req: Request) {
     }
 
     if (process.env.GEMINI_API_KEY) {
-      console.log("Using real Gemini API...");
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      console.log("Using real Gemini API (Gemini 2.0 Flash)...");
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
       const prompt = `Generate a CSV of 10 mission-critical test scenarios for a Fintech flow named "${name}". 
       Include columns: ID, Scenario, Priority, Expected Result.
       Focus on edge cases like security, concurrency, and validation.
