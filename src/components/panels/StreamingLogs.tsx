@@ -17,15 +17,15 @@ export const StreamingLogs = ({ logs }: { logs: string[] }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-panel w-full h-full flex flex-col overflow-hidden"
+      className="glass-panel w-full h-full relative overflow-hidden bg-[#0a0a0a]"
     >
-      <div className="border-b border-white/10 px-4 py-3 flex items-center gap-2 bg-white/5">
+      <div className="border-b border-white/10 px-4 h-12 flex items-center gap-2 bg-white/5 shrink-0 absolute top-0 left-0 w-full z-10">
         <Terminal size={16} className="text-primary" />
         <span className="text-sm font-medium tracking-wider text-white/80 uppercase">Streaming Logs</span>
       </div>
       <div 
         ref={containerRef}
-        className="flex-1 p-4 overflow-y-auto custom-scrollbar font-mono text-xs leading-relaxed"
+        className="absolute top-12 left-0 w-full bottom-0 p-4 pb-8 overflow-y-auto custom-scrollbar font-mono text-xs leading-relaxed"
       >
         {logs.map((log, i) => {
           let color = "text-white/60";

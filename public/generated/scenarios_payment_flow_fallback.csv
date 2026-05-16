@@ -1,0 +1,4 @@
+ID,Scenario,Priority,Expected Result
+PMT-001,Payment with insufficient balance,High,Error 402 Payment Required
+PMT-002,Payment Gateway Timeout,High,System should retry and then fail gracefully
+PMT-003,Double tap on pay button (Concurrency),Critical,Idempotency key should prevent double charge

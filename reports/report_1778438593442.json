@@ -1,0 +1,57 @@
+{
+  "id": "report_1778438593442",
+  "timestamp": "2026-05-10T18:43:13.442Z",
+  "prompt": "Investigate checkout outage after latest deployment.",
+  "logs": [
+    {
+      "timestamp": "2026-05-10T18:42:59.461Z",
+      "message": "USER: Investigate checkout outage after latest deployment."
+    },
+    {
+      "timestamp": "2026-05-10T18:42:59.462Z",
+      "message": "AGENT [QA Orchestrator]: Initializing testing swarm..."
+    },
+    {
+      "timestamp": "2026-05-10T18:42:59.463Z",
+      "message": "AGENT [QA Bot]: Planning test vectors for the target API..."
+    },
+    {
+      "timestamp": "2026-05-10T18:43:02.256Z",
+      "message": "AGENT [Network]: Executing POST http://localhost:3000/api/checkout with payload: none"
+    },
+    {
+      "timestamp": "2026-05-10T18:43:02.995Z",
+      "message": "AGENT [Infra]: Received response [HTTP 401]"
+    },
+    {
+      "timestamp": "2026-05-10T18:43:06.117Z",
+      "message": "AGENT [Network]: Executing POST http://localhost:3000/api/checkout?token=dummy_token with payload: {\"items\":[{\"id\":\"1\",\"quantity\":1}],\"total\":10}"
+    },
+    {
+      "timestamp": "2026-05-10T18:43:06.162Z",
+      "message": "AGENT [Infra]: Received response [HTTP 401]"
+    },
+    {
+      "timestamp": "2026-05-10T18:43:09.114Z",
+      "message": "AGENT [Network]: Executing POST http://localhost:3000/api/checkout with payload: {\"token\":\"test-token\",\"items\":[{\"id\":\"1\",\"quantity\":1}],\"total\":10}"
+    },
+    {
+      "timestamp": "2026-05-10T18:43:09.134Z",
+      "message": "AGENT [Infra]: Received response [HTTP 200]"
+    },
+    {
+      "timestamp": "2026-05-10T18:43:11.599Z",
+      "message": "AGENT [Network]: Executing POST http://localhost:3000/api/checkout with payload: {\"token\":\"test-token\",\"items\":[{\"id\":\"1\",\"quantity\":1}],\"total\":-100}"
+    },
+    {
+      "timestamp": "2026-05-10T18:43:11.617Z",
+      "message": "AGENT [Infra]: Received response [HTTP 400]"
+    },
+    {
+      "timestamp": "2026-05-10T18:43:13.442Z",
+      "message": "AGENT [Architect]: Finalizing test report..."
+    }
+  ],
+  "analysis": "",
+  "status": "success"
+}

@@ -1,0 +1,57 @@
+{
+  "id": "report_1778515629995",
+  "timestamp": "2026-05-11T16:07:09.995Z",
+  "prompt": "Investigate checkout outage after latest deployment.",
+  "logs": [
+    {
+      "timestamp": "2026-05-11T16:06:38.559Z",
+      "message": "USER: Investigate checkout outage after latest deployment."
+    },
+    {
+      "timestamp": "2026-05-11T16:06:38.560Z",
+      "message": "AGENT [QA Orchestrator]: Initializing testing swarm..."
+    },
+    {
+      "timestamp": "2026-05-11T16:06:38.560Z",
+      "message": "AGENT [QA Bot]: Planning test vectors for the target API..."
+    },
+    {
+      "timestamp": "2026-05-11T16:06:43.857Z",
+      "message": "AGENT [Network]: Executing POST http://localhost:3000/api/checkout with payload: {\"items\": [{\"id\": \"item1\", \"quantity\": 1, \"price\": 100}], \"paymentToken\": \"tok_visa\"}"
+    },
+    {
+      "timestamp": "2026-05-11T16:06:43.893Z",
+      "message": "AGENT [Infra]: Received response [HTTP 400]"
+    },
+    {
+      "timestamp": "2026-05-11T16:06:50.907Z",
+      "message": "AGENT [Network]: Executing POST http://localhost:3000/api/checkout with payload: {\"items\": [{\"id\": \"item1\", \"quantity\": 1, \"price\": 100}], \"amount\": 100, \"paymentToken\": \"tok_visa\"}"
+    },
+    {
+      "timestamp": "2026-05-11T16:06:50.937Z",
+      "message": "AGENT [Infra]: Received response [HTTP 200]"
+    },
+    {
+      "timestamp": "2026-05-11T16:06:57.278Z",
+      "message": "AGENT [Network]: Executing POST http://localhost:3000/api/checkout with payload: {\"items\": [{\"id\": \"item1\", \"quantity\": 1, \"price\": -100}], \"amount\": -100, \"paymentToken\": \"tok_visa\"}"
+    },
+    {
+      "timestamp": "2026-05-11T16:06:57.305Z",
+      "message": "AGENT [Infra]: Received response [HTTP 400]"
+    },
+    {
+      "timestamp": "2026-05-11T16:07:05.798Z",
+      "message": "AGENT [Network]: Executing POST http://localhost:3000/api/checkout with payload: {\"items\": [{\"id\": \"item1\", \"quantity\": 1, \"price\": 0}], \"amount\": 0, \"paymentToken\": \"tok_visa\"}"
+    },
+    {
+      "timestamp": "2026-05-11T16:07:05.823Z",
+      "message": "AGENT [Infra]: Received response [HTTP 400]"
+    },
+    {
+      "timestamp": "2026-05-11T16:07:09.995Z",
+      "message": "AGENT [Architect]: Finalizing test report..."
+    }
+  ],
+  "analysis": "",
+  "status": "success"
+}
