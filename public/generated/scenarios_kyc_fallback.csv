@@ -1,0 +1,4 @@
+ID,Scenario,Priority,Expected Result
+TC-001,KYC Submission with expired ID,High,Error 400 validation failed
+TC-002,KYC with non-Latin characters,Medium,Success with translation
+TC-003,Concurrent KYC attempts same UID,High,Locking mechanism active

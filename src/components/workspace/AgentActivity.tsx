@@ -18,7 +18,7 @@ export const AgentActivity = ({ activeAgents }: { activeAgents: string[] }) => {
   if (activeAgents.length === 0) return null;
 
   return (
-    <div className="fixed top-24 left-6 flex flex-col gap-2 z-50">
+    <div className="fixed bottom-32 left-6 flex flex-col gap-2 z-50">
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between gap-3 px-4 py-2 glass-panel hover:bg-white/5 transition-colors w-48"

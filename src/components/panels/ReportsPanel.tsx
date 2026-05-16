@@ -23,7 +23,45 @@ export const ReportsPanel = ({ onClose }: { onClose: () => void }) => {
       try {
         const response = await fetch('/api/reports');
         const data = await response.json();
-        setReports(data.reports || []);
+        
+        // Inject Hackathon Mock Data
+        const mockReports: Report[] = [
+          {
+            id: "r_101",
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
+            prompt: "Load test Payment Gateway at 10,000 TPS",
+            status: "critical",
+            analysis: "DB bottleneck identified in transactions table index. Healer agent generated and merged composite index PR #402. TPS stabilized.",
+            logs: [
+              { timestamp: new Date().toISOString(), message: "AGENT [Infra]: Initiating 10k TPS load sequence." },
+              { timestamp: new Date().toISOString(), message: "AGENT [Infra]: Latency spiked to 4000ms. DB Lock detected." },
+              { timestamp: new Date().toISOString(), message: "AGENT [Healer]: Analyzing DB trace... Writing composite index patch." }
+            ]
+          },
+          {
+            id: "r_102",
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
+            prompt: "WCAG 2.1 AA Audit on KYC Onboarding flow",
+            status: "success",
+            analysis: "Scanned 14 screens. Found 12 contrast issues and 2 missing ARIA labels. Auto-generated CSS patch applied.",
+            logs: [
+               { timestamp: new Date().toISOString(), message: "AGENT [Compliance]: Traversing React DOM tree for onboarding module." }
+            ]
+          },
+          {
+            id: "r_103",
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
+            prompt: "Generate regression scripts for Legacy Wallet Engine",
+            status: "success",
+            analysis: "Parsed legacy codebase. Auto-generated 340 Playwright E2E scripts. Coverage increased from 12% to 94%.",
+            logs: [
+               { timestamp: new Date().toISOString(), message: "AGENT [SDET]: AST parsing complete. Generating test vectors." }
+            ]
+          }
+        ];
+        
+        const apiReports = data.reports || [];
+        setReports([...apiReports, ...mockReports]);
       } catch (error) {
         console.error("Failed to fetch reports:", error);
       } finally {

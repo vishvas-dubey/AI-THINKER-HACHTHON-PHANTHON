@@ -1,0 +1,24 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Fintech Core API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/auth": {
+      "get": { "summary": "User Authentication" }
+    },
+    "/api/v1/users/profile": {
+      "get": { "summary": "Get Profile" }
+    },
+    "/api/v1/payments/history": {
+      "get": { "summary": "Transaction History" }
+    },
+    "/api/v1/payments/verify": {
+      "post": { "summary": "Verify Transaction" }
+    },
+    "/api/v1/kyc/upload": {
+      "post": { "summary": "Upload KYC Document" }
+    }
+  }
+}

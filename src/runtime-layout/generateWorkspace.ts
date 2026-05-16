@@ -45,9 +45,10 @@ export const generateWorkspace = (sceneIndex: number, currentLogs: string[], use
         status: "investigating",
         logs: currentLogs,
         panels: [
-          { id: "p-metrics", type: "metrics_panel", position: "left", gridArea: "1 / 1 / 5 / 9", size: "medium" },
+          { id: "p-health", type: "release_health", position: "left", gridArea: "1 / 1 / 7 / 9", size: "medium" },
           { id: "p-logs", type: "streaming_logs", position: "right", gridArea: "1 / 9 / 13 / 13", size: "large" },
-          { id: "p-topology", type: "topology_map", position: "bottom", gridArea: "5 / 1 / 13 / 9", size: "large" }
+          { id: "p-topology", type: "topology_map", position: "bottom", gridArea: "7 / 1 / 13 / 6", size: "medium" },
+          { id: "p-metrics", type: "metrics_panel", position: "bottom", gridArea: "7 / 6 / 13 / 9", size: "small" }
         ]
       };
     case 3:
@@ -58,11 +59,10 @@ export const generateWorkspace = (sceneIndex: number, currentLogs: string[], use
         status: "critical",
         logs: currentLogs,
         panels: [
-          { id: "p-topology-alert", type: "topology_map", position: "left", gridArea: "1 / 1 / 7 / 6", size: "medium", data: { alert: true } },
-          { id: "p-metrics-alert", type: "metrics_panel", position: "center", gridArea: "1 / 6 / 7 / 9", size: "small", data: { alert: true } },
+          { id: "p-health-alert", type: "release_health", position: "left", gridArea: "1 / 1 / 7 / 9", size: "medium", data: { alert: true } },
           { id: "p-logs", type: "streaming_logs", position: "right", gridArea: "1 / 9 / 13 / 13", size: "large" },
-          { id: "p-debugger", type: "debugger_panel", position: "bottom-left", gridArea: "7 / 1 / 13 / 5", size: "medium", data: { analysis: analysisText } },
-          { id: "p-rollback", type: "rollback_console", position: "bottom", gridArea: "7 / 5 / 13 / 9", size: "medium" }
+          { id: "p-topology-alert", type: "topology_map", position: "bottom", gridArea: "7 / 1 / 13 / 6", size: "medium", data: { alert: true } },
+          { id: "p-metrics-alert", type: "metrics_panel", position: "bottom", gridArea: "7 / 6 / 13 / 9", size: "small", data: { alert: true } }
         ]
       };
     case 4:

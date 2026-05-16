@@ -6,9 +6,10 @@ import "@xyflow/react/dist/style.css";
 import { motion } from "framer-motion";
 import { Activity } from "lucide-react";
 
-export const TopologyMap = ({ data }: { data?: any }) => {
-  const isAlert = data?.alert;
+export const TopologyMap = ({ data, isCritical: isCriticalProp }: { data?: any, isCritical?: boolean }) => {
+  const isAlert = data?.alert || isCriticalProp;
   const isRecovered = data?.recovered;
+  const isCritical = isCriticalProp;
 
   const initialNodes: Node[] = [
     { id: "1", position: { x: 250, y: 50 }, data: { label: "API Gateway" }, style: { background: "#1e293b", color: "#fff", border: "1px solid #334155" } },
@@ -73,9 +74,17 @@ export const TopologyMap = ({ data }: { data?: any }) => {
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={`glass-panel w-full h-full flex flex-col overflow-hidden transition-all duration-500 ${isAlert ? "border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.2)]" : ""}`}
+      className={`glass-panel w-full h-full flex flex-col overflow-hidden relative ${isCritical ? "border-red-500/30 shadow-[0_0_30px_rgba(239,68,68,0.1)]" : ""}`}
     >
-      <div className="border-b border-white/10 px-4 py-3 flex items-center gap-2 bg-white/5 z-10 relative">
+      <style jsx global>{`
+        .react-flow__attribution, .react-flow__attribution * {
+          display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+        }
+      `}</style>
+      <div className="border-b border-white/10 px-4 py-3 flex items-center gap-2 bg-white/5 z-10 shrink-0">
         <Activity size={16} className={isAlert ? "text-red-400" : isRecovered ? "text-green-400" : "text-primary"} />
         <span className="text-sm font-medium tracking-wider text-white/80 uppercase">Service Topology</span>
         {isAlert && <span className="ml-auto text-xs text-red-400 font-bold animate-pulse">CRITICAL OUTAGE DETECTED</span>}

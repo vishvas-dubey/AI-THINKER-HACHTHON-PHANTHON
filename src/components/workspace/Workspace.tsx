@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TopologyMap } from "../panels/TopologyMap";
 import { StreamingLogs } from "../panels/StreamingLogs";
@@ -10,17 +10,52 @@ import { InvestigationPanel } from "../panels/InvestigationPanel";
 import { MetricsPanel } from "../panels/MetricsPanel";
 import { DebuggerPanel } from "../panels/DebuggerPanel";
 import { PanelConfig, WorkspaceConfig, generateWorkspace } from "@/runtime-layout/generateWorkspace";
-import { Command, Sparkles, Search, Activity, Shield, Terminal, History } from "lucide-react";
+import { 
+  Zap, 
+  Shield, 
+  Activity, 
+  Terminal, 
+  Search, 
+  AlertCircle,
+  History,
+  RotateCcw,
+  LayoutGrid,
+  ChevronRight,
+  Sparkles,
+  Bot,
+  AlertTriangle,
+  CheckCircle,
+  Command,
+  FilePlus
+} from "lucide-react";
+import { ReleaseHealthPanel } from "../panels/ReleaseHealthPanel";
 import { AgentActivity } from "./AgentActivity";
 import { ReportsPanel } from "../panels/ReportsPanel";
+import { TestGenModal } from "./TestGenModal";
+import { ApiTestModal } from "./ApiTestModal";
 
 export const Workspace = () => {
   const [scene, setScene] = useState(0);
-  const [promptInput, setPromptInput] = useState("Investigate checkout outage after latest deployment.");
+  const [promptInput, setPromptInput] = useState("Run Release Readiness Audit (Project: Fintech KYC & Payments, Deadline: 72h)");
   const [workspace, setWorkspace] = useState<WorkspaceConfig>(generateWorkspace(0, [], promptInput));
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
   const [analysisResult, setAnalysisResult] = useState("");
   const [isReportsOpen, setIsReportsOpen] = useState(false);
+  const [isTestGenOpen, setIsTestGenOpen] = useState(false);
+  const [isApiTestOpen, setIsApiTestOpen] = useState(false);
+
+  useEffect(() => {
+    (window as any).openApiTester = () => setIsApiTestOpen(true);
+    return () => { delete (window as any).openApiTester; };
+  }, []);
+
+  const resetWorkspace = () => {
+    setScene(0);
+    setWorkspace(generateWorkspace(0, []));
+    setAnalysisResult("");
+    setIsTestGenOpen(false);
+    setIsApiTestOpen(false);
+  };
 
   useEffect(() => {
     // Generate the next state based on the scene index
@@ -37,8 +72,9 @@ export const Workspace = () => {
   const handlePrompt = async () => {
     setScene(1);
     
-    // Clear previous logs
+    // Clear previous logs and analysis
     setWorkspace(prev => ({ ...prev, logs: [] }));
+    setAnalysisResult("");
 
     try {
       const response = await fetch('/api/qa-agent', {
@@ -99,10 +135,16 @@ export const Workspace = () => {
     setScene(4);
   };
 
+  const generatedFileUrl = useMemo(() => {
+    if (!analysisResult) return null;
+    const match = analysisResult.match(/\/generated\/[a-zA-Z0-9_-]+\.csv/);
+    return match ? match[0] : null;
+  }, [analysisResult]);
+
   const renderPanel = (panel: PanelConfig) => {
     switch (panel.type) {
       case "topology_map":
-        return <TopologyMap data={panel.data} />;
+        return <TopologyMap data={panel.data} isCritical={workspace.status === 'critical'} />;
       case "rollback_console":
         return <RollbackConsole onRollback={handleRollback} />;
       case "incident_timeline":
@@ -113,6 +155,14 @@ export const Workspace = () => {
         return <InvestigationPanel />;
       case "metrics_panel":
         return <MetricsPanel isCritical={panel.data?.alert} />;
+      case "release_health":
+        return (
+          <ReleaseHealthPanel 
+            isCritical={workspace.status === 'success'} 
+            fileUrl={generatedFileUrl || undefined}
+            onOpenTestGen={() => setIsTestGenOpen(true)}
+          />
+        );
       case "debugger_panel":
         return <DebuggerPanel />;
       default:
@@ -123,13 +173,13 @@ export const Workspace = () => {
   const getGridClasses = (layout: string) => {
     switch (layout) {
       case "investigation":
-        return "flex items-center justify-center p-8";
+        return "flex items-center justify-center p-8 h-full";
       case "war_room":
-        return "grid grid-cols-12 grid-rows-12 gap-4 p-4";
+        return "grid grid-cols-12 grid-rows-12 gap-4 p-4 h-full";
       case "recovery":
-        return "grid grid-cols-12 grid-rows-12 gap-4 p-4";
+        return "grid grid-cols-12 grid-rows-12 gap-4 p-4 h-full";
       default:
-        return "flex items-center justify-center p-8";
+        return "flex items-center justify-center p-8 h-full";
     }
   };
 
@@ -142,13 +192,13 @@ export const Workspace = () => {
 
   const getPanelClasses = (panel: PanelConfig) => {
     if (workspace.layout === "investigation") {
-      return "w-full max-w-4xl h-[600px]";
+      return "w-full max-w-4xl h-[600px] min-h-0";
     }
-    return "w-full h-full";
+    return "w-full h-full min-h-0";
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-transparent overflow-x-hidden overflow-y-auto custom-scrollbar">
+    <div className="h-screen w-full flex flex-col bg-transparent overflow-hidden">
       {/* Header */}
       <header className="h-16 border-b border-white/10 bg-black/40 backdrop-blur-md flex items-center justify-between px-6 z-50 sticky top-0">
         <div className="flex items-center gap-4">
@@ -193,7 +243,7 @@ export const Workspace = () => {
       </header>
 
       {/* Main Workspace Area */}
-      <main className={`flex-1 relative transition-all duration-1000 p-6 flex flex-col ${workspace.layout !== 'empty' ? getGridClasses(workspace.layout) : 'items-center justify-center'}`}>
+      <main className={`flex-1 relative transition-all duration-1000 p-6 flex flex-col overflow-y-auto custom-scrollbar ${workspace.layout !== 'empty' ? getGridClasses(workspace.layout) : 'items-center justify-center'}`}>
         <AnimatePresence mode="popLayout">
           {scene === 0 ? (
             <motion.div 
@@ -305,20 +355,23 @@ export const Workspace = () => {
               </div>
             </motion.div>
           ) : (
-            workspace.panels.map(panel => (
-              <motion.div
-                key={panel.id}
-                layoutId={panel.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5, type: "spring", bounce: 0.2 }}
-                className={getPanelClasses(panel)}
-                style={getPanelStyles(panel)}
-              >
-                {renderPanel(panel)}
-              </motion.div>
-            ))
+            <>
+              {workspace.panels.map(panel => (
+                <motion.div
+                  key={panel.id}
+                  layoutId={panel.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.5, type: "spring", bounce: 0.2 }}
+                  className={getPanelClasses(panel)}
+                  style={getPanelStyles(panel)}
+                >
+                  {renderPanel(panel)}
+                </motion.div>
+              ))}
+
+            </>
           )}
         </AnimatePresence>
       </main>
@@ -327,6 +380,24 @@ export const Workspace = () => {
       
       <AnimatePresence>
         {isReportsOpen && <ReportsPanel onClose={() => setIsReportsOpen(false)} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isTestGenOpen && (
+          <TestGenModal 
+            onClose={() => setIsTestGenOpen(false)} 
+            onReset={resetWorkspace}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isApiTestOpen && (
+          <ApiTestModal 
+            onClose={() => setIsApiTestOpen(false)} 
+            onReset={resetWorkspace}
+          />
+        )}
       </AnimatePresence>
       
       {/* Background Ambient Glow */}

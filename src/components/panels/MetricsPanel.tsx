@@ -1,18 +1,19 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
 import { Activity } from "lucide-react";
 
-const generateData = (isCritical: boolean) => {
+const generateData = (isCritical: boolean, length = 15) => {
   const now = new Date();
-  return Array.from({ length: 15 }).map((_, i) => {
-    const time = new Date(now.getTime() - (15 - i) * 60000);
+  return Array.from({ length }).map((_, i) => {
+    const time = new Date(now.getTime() - (length - i) * 1000);
     const baseLatency = 100 + Math.random() * 50;
-    const latency = isCritical && i > 10 ? baseLatency * (i - 9) * 2 : baseLatency;
-    const errors = isCritical && i > 10 ? (i - 10) * 15 + Math.random() * 10 : 0;
+    const latency = isCritical ? baseLatency * (i > 10 ? (i - 9) * 2 : 2) : baseLatency;
+    const errors = isCritical ? (i > 10 ? (i - 10) * 15 + Math.random() * 10 : Math.random() * 5) : Math.random();
     return {
-      time: `${time.getHours()}:${time.getMinutes()}`,
+      time: `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`,
       latency: Math.min(latency, 3000),
       errors: Math.min(errors, 100)
     };
@@ -20,7 +21,29 @@ const generateData = (isCritical: boolean) => {
 };
 
 export const MetricsPanel = ({ isCritical }: { isCritical?: boolean }) => {
-  const chartData = generateData(!!isCritical);
+  const [chartData, setChartData] = useState(() => generateData(!!isCritical));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setChartData(prev => {
+        const now = new Date();
+        const baseLatency = 100 + Math.random() * 50;
+        const latency = isCritical ? baseLatency * (5 + Math.random() * 5) : baseLatency;
+        const errors = isCritical ? 50 + Math.random() * 50 : Math.random() * 2;
+        
+        const newDataPoint = {
+          time: `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`,
+          latency: Math.min(latency, 3000),
+          errors: Math.min(errors, 100)
+        };
+        
+        return [...prev.slice(1), newDataPoint];
+      });
+    }, 1500); // Update every 1.5 seconds
+
+    return () => clearInterval(interval);
+  }, [isCritical]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -49,7 +72,7 @@ export const MetricsPanel = ({ isCritical }: { isCritical?: boolean }) => {
                 contentStyle={{ background: "#000", border: "1px solid #ffffff20", fontSize: "10px" }}
                 itemStyle={{ color: "#fff" }}
               />
-              <Area type="monotone" dataKey="latency" stroke={isCritical ? "#ef4444" : "#3b82f6"} fillOpacity={1} fill="url(#colorLatency)" />
+              <Area type="monotone" dataKey="latency" stroke={isCritical ? "#ef4444" : "#3b82f6"} fillOpacity={1} fill="url(#colorLatency)" isAnimationActive={false} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -64,7 +87,7 @@ export const MetricsPanel = ({ isCritical }: { isCritical?: boolean }) => {
                 contentStyle={{ background: "#000", border: "1px solid #ffffff20", fontSize: "10px" }}
                 itemStyle={{ color: "#fff" }}
               />
-              <Line type="monotone" dataKey="errors" stroke="#ef4444" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="errors" stroke="#ef4444" strokeWidth={2} dot={false} isAnimationActive={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
